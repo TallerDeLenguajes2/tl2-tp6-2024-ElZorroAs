@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using EspacioTp5;
+using tl2_tp6_2024_ElZorroAs.Models;
 using Microsoft.Data.Sqlite;
 
 namespace rapositoriosTP5
