@@ -95,17 +95,29 @@ namespace repositoriosTP6
 
         public void EliminarProducto(int id)
         {
-            var query = "DELETE FROM productos WHERE idProducto = @idProducto";
             using (var connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+
+                // Eliminar primero las referencias en PresupuestosDetalle
+                var queryEliminarReferencias = "DELETE FROM PresupuestosDetalle WHERE idProducto = @idProducto";
+                using (var command = new SqliteCommand(queryEliminarReferencias, connection))
                 {
                     command.Parameters.AddWithValue("@idProducto", id);
                     command.ExecuteNonQuery();
                 }
+
+                // Luego, eliminar el producto
+                var queryEliminarProducto = "DELETE FROM productos WHERE idProducto = @idProducto";
+                using (var command = new SqliteCommand(queryEliminarProducto, connection))
+                {
+                    command.Parameters.AddWithValue("@idProducto", id);
+                    command.ExecuteNonQuery();
+                }
+
                 connection.Close();
             }
         }
+
     }
 }

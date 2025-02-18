@@ -8,17 +8,12 @@
 
 <form asp-action="CrearProducto" method="post">
     <div class="form-group">
-        <label for="IdProducto">ID</label>
-        <input type="number" id="IdProducto" name="IdProducto" class="form-control" required />
-    </div>
-    <div class="form-group">
         <label for="Descripcion">Descripción</label>
-        <input type="text" id="Descripcion" name="Descripcion" class="form-control" required />
+        <input type="text" id="Descripcion" name="descripcion" class="form-control" required />
     </div>
     <div class="form-group">
         <label for="Precio">Precio</label>
-        <input type="number" id="Precio" name="Precio" class="form-control" required />
+        <input type="number" id="Precio" name="precio" class="form-control" required />
     </div>
     <button type="submit" class="btn btn-primary mt-3">Crear</button>
-    <a href="@Url.Action("ListarProductos", "Producto")" class="btn btn-secondary mt-3">Cancelar</a>
 </form>

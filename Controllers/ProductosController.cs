@@ -51,13 +51,16 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             return View();
         }
 
-        // Acción para crear un producto
+        // Acción para procesar la creación de un producto
         [HttpPost]
-        public IActionResult CrearProducto(Productos producto)
+        public IActionResult CrearProducto(string descripcion, int precio)
         {
+            var producto = new Productos(descripcion, precio);
             _productoRepository.CrearProducto(producto);
             return RedirectToAction("ListarProductos");
         }
+
+
 
         // Acción para mostrar la vista de modificar producto
         [HttpGet]
