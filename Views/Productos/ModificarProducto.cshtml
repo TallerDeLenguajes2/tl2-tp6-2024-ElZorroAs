@@ -1,0 +1,23 @@
+@model tl2_tp6_2024_ElZorroAs.Models.Productos
+
+@{
+    ViewData["Title"] = "Modificar Producto";
+}
+
+<h2>Modificar Producto</h2>
+
+<form asp-action="ModificarProducto" method="post">
+    <input type="hidden" name="id" value="@Model.IdProducto" />
+    <div class="form-group">
+        <label for="Descripcion">Descripción</label>
+        <input type="text" id="Descripcion" name="descripcion" class="form-control" value="@Model.Descripcion"
+            required />
+    </div>
+    <div class="form-group">
+        <label for="Precio">Precio</label>
+        <input type="number" id="Precio" name="precio" class="form-control" value="@Model.Precio" required />
+    </div>
+    <button type="submit" class="btn btn-warning mt-3">Modificar</button>
+    <a href="@Url.Action("ListarProductos", "Productos")" class="btn btn-secondary mt-3">Cancelar</a>
+
+</form>

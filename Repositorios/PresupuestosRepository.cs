@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 using tl2_tp6_2024_ElZorroAs.Models;
 
-namespace rapositoriosTP5
+namespace repositoriosTP6
 {
     public class PresupuestoRepository : IPresupuestoRepository
     {

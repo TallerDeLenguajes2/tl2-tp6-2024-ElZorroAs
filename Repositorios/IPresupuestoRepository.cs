@@ -1,7 +1,7 @@
 using tl2_tp6_2024_ElZorroAs.Models;
 using System.Collections.Generic;
 
-namespace rapositoriosTP5
+namespace repositoriosTP6
 {
     public interface IPresupuestoRepository
     {

@@ -1,7 +1,12 @@
+using repositoriosTP6; // Asegúrate de importar el namespace del repositorio
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Inyección de dependencia del repositorio de productos
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>(); 
 
 var app = builder.Build();
 
@@ -16,12 +21,12 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
+app.UseRouting(); 
 
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Productos}/{action=ListarProductos}/{id?}");
 
 app.Run();

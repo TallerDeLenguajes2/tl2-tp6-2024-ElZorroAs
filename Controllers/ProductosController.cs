@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using tl2_tp6_2024_ElZorroAs.Models;
-using rapositoriosTP5;
+using repositoriosTP6;
 
 namespace tl2_tp6_2024_ElZorroAs.Controllers
 {
@@ -14,12 +13,14 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             _productoRepository = productoRepository;
         }
 
+        // Acción para listar productos
         public IActionResult ListarProductos()
         {
             var productos = _productoRepository.ListarProductos();
             return View(productos);
         }
 
+        // Acción para obtener un producto
         [HttpGet]
         public IActionResult ObtenerProducto(int id)
         {
@@ -31,6 +32,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             return View(producto);
         }
 
+        // Acción para recibir datos POST de un producto
         [HttpPost]
         public IActionResult ObtenerProductoPost(int id)
         {
@@ -42,12 +44,14 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             return View("ObtenerProducto", producto);
         }
 
+        // Acción para mostrar la vista de crear producto
         [HttpGet]
         public IActionResult CrearProducto()
         {
             return View();
         }
 
+        // Acción para crear un producto
         [HttpPost]
         public IActionResult CrearProducto(Productos producto)
         {
@@ -55,6 +59,9 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             return RedirectToAction("ListarProductos");
         }
 
+        // Acción para mostrar la vista de modificar producto
+        [HttpGet]
+        // Acción para mostrar la vista de modificar producto
         [HttpGet]
         public IActionResult ModificarProducto(int id)
         {
@@ -66,18 +73,26 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             return View(producto);
         }
 
+        // Acción para modificar un producto
         [HttpPost]
-        public IActionResult ModificarProducto(int id, Productos producto)
+        public IActionResult ModificarProducto(int id, string descripcion, int precio)
         {
-            var existeProducto = _productoRepository.ObtenerProducto(id);
-            if (existeProducto == null)
+            var productoExistente = _productoRepository.ObtenerProducto(id);
+            if (productoExistente == null)
             {
                 return NotFound();
             }
-            _productoRepository.ModificarProducto(id, producto);
+
+            // Crear una nueva instancia del modelo con los valores recibidos
+            var productoModificado = new Productos(id, descripcion, precio);
+
+            // Llamar al repositorio para modificar el producto
+            _productoRepository.ModificarProducto(id, productoModificado);
+
             return RedirectToAction("ListarProductos");
         }
 
+        // Acción para mostrar la vista de eliminar producto
         [HttpGet]
         public IActionResult EliminarProducto(int id)
         {
@@ -89,6 +104,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             return View(producto);
         }
 
+        // Acción para confirmar la eliminación de un producto
         [HttpPost]
         public IActionResult ConfirmarEliminarProducto(int id)
         {

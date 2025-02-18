@@ -7,7 +7,11 @@ using System;
 namespace tl2_tp6_2024_ElZorroAs.Models;
 public class Productos
 {
-    
+    public Productos(string descripcion, int precio)
+    {
+        Descripcion = descripcion;
+        Precio = precio;
+    }
     public Productos(int idProducto, string descripcion, int precio)
     {
         IdProducto = idProducto;
