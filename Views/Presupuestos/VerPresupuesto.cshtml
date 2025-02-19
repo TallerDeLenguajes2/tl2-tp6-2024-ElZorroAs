@@ -1,0 +1,50 @@
+@model tl2_tp6_2024_ElZorroAs.Models.Presupuestos
+
+@{
+    ViewData["Title"] = "Ver Presupuesto - " + Model.IdPresupuesto;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <h3>Datos del Presupuesto</h3>
+    <p><strong>ID:</strong> @Model.IdPresupuesto</p>
+    <p><strong>Destinatario:</strong> @Model.NombreDestinatario</p>
+    <p><strong>Fecha de Creación:</strong> @Model.FechaCreacion.ToShortDateString()</p>
+    <p><strong>Monto Total:</strong> $@Model.MontoPresupuestoConIva().ToString("N2")</p>
+</div>
+
+<h3>Productos del Presupuesto</h3>
+
+@if (Model.Detalle != null && Model.Detalle.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in Model.Detalle)
+            {
+                <tr>
+                    <td>@detalle.Producto.Descripcion</td>
+                    <td>@detalle.Cantidad</td>
+                    <td>$@detalle.Producto.Precio.ToString("N2")</td>
+                    <td>$@(detalle.Cantidad * detalle.Producto.Precio).ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No se han agregado productos a este presupuesto.</p>
+}
+
+<div>
+    <a class="btn btn-secondary" href="/Presupuestos/ListarPresupuesto">Volver a la Lista de Presupuestos</a>
+</div>

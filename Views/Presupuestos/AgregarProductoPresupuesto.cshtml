@@ -1,0 +1,30 @@
+@{
+    ViewData["Title"] = "Agregar Producto al Presupuesto";
+}
+
+<h2>Agregar Producto al Presupuesto</h2>
+
+<form asp-action="AgregarProductoPresupuesto" method="post">
+    <input type="hidden" name="idPresupuesto" value="@ViewBag.IdPresupuesto" />
+    
+    <div class="form-group">
+        <label for="idProducto">Seleccionar Producto:</label>
+        <select name="idProducto" class="form-control" required>
+            <option value="">-- Seleccione un producto --</option>
+            @foreach (var producto in ViewBag.Productos)
+            {
+                <option value="@producto.IdProducto">@producto.Descripcion</option>
+
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" name="cantidad" class="form-control" min="1" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Agregar Producto</button>
+    <a asp-action="ListarPresupuesto" class="btn btn-secondary">Cancelar</a>
+</form>
+

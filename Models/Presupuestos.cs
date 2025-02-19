@@ -15,6 +15,13 @@ namespace tl2_tp6_2024_ElZorroAs.Models;
 public class Presupuestos
 {
 
+    public Presupuestos(string nombreDestinatario, DateTime fechaCreacion, List<PresupuestosDetalle> detalle = null)
+    {
+
+        NombreDestinatario = nombreDestinatario;
+        FechaCreacion = fechaCreacion;  // Aquí se pasa la fecha al crear el presupuesto
+        Detalle = detalle ?? new List<PresupuestosDetalle>();
+    }
     public Presupuestos(int idPresupuesto, string nombreDestinatario, DateTime fechaCreacion, List<PresupuestosDetalle> detalle = null)
     {
         IdPresupuesto = idPresupuesto;

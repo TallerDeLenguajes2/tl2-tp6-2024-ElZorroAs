@@ -1,0 +1,40 @@
+@model List<tl2_tp6_2024_ElZorroAs.Models.Presupuestos>
+
+@{
+    ViewData["Title"] = "Lista de Presupuestos";
+}
+
+<h2>Lista de Presupuestos</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Destinatario</th>
+            <th>Fecha de Creación</th>
+            <th>Monto Total</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var presupuesto in Model)
+        {
+            <tr>
+                <td>@presupuesto.IdPresupuesto</td>
+                <td>@presupuesto.NombreDestinatario</td>
+                <td>@presupuesto.FechaCreacion.ToShortDateString()</td>
+                <td>$@presupuesto.MontoPresupuestoConIva().ToString("N2")</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="VerPresupuesto" asp-route-id="@presupuesto.IdPresupuesto">Ver</a>
+                    <a class="btn btn-danger" asp-action="EliminarPresupuesto" asp-route-id="@presupuesto.IdPresupuesto" onclick="return confirm('¿Está seguro de eliminar este presupuesto?');">Eliminar</a>
+
+                    <!-- Botón para agregar producto a este presupuesto -->
+                    <a class="btn btn-secondary" asp-action="AgregarProductoPresupuesto" asp-route-id="@presupuesto.IdPresupuesto">Agregar Producto</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-success" asp-action="CrearPresupuesto">Crear Nuevo Presupuesto</a>
+

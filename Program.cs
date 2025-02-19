@@ -1,12 +1,13 @@
 using repositoriosTP6; // Asegúrate de importar el namespace del repositorio
-
+using tl2_tp6_2024_ElZorroAs.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Inyección de dependencia del repositorio de productos
-builder.Services.AddScoped<IProductoRepository, ProductoRepository>(); 
+// Inyección de dependencias (sin registros duplicados)
+builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
+builder.Services.AddScoped<IPresupuestoRepository, PresupuestosRepository>();
 
 var app = builder.Build();
 
@@ -27,6 +28,5 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Productos}/{action=ListarProductos}/{id?}");
-
+    pattern: "{controller=Presupuestos}/{action=ListarPresupuesto}/{id?}");
 app.Run();
