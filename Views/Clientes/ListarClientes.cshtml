@@ -1,0 +1,38 @@
+@model IEnumerable<tl2_tp6_2024_ElZorroAs.Models.Clientes>
+
+@{
+    ViewData["Title"] = "Lista de Clientes";
+}
+
+<h2>Lista de Clientes</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cliente in Model)
+        {
+            <tr>
+                <td>@cliente.ClienteId</td>
+                <td>@cliente.Nombre</td>
+                <td>@cliente.Email</td>
+                <td>@cliente.Telefono</td>
+                <td>
+                    <a asp-action="ModificarCliente" asp-route-id="@cliente.ClienteId" class="btn btn-warning">Modificar</a>
+                    <form asp-action="EliminarCliente" asp-route-id="@cliente.ClienteId" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar este cliente?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="CrearCliente" class="btn btn-success">Crear Nuevo Cliente</a>

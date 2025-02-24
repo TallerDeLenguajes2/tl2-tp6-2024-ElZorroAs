@@ -1,11 +1,12 @@
-using tl2_tp6_2024_ElZorroAs.Models;
-using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using Microsoft.Data.Sqlite;
+using Microsoft.Extensions.Logging; // Importamos el espacio de nombres para el logger
+using tl2_tp6_2024_ElZorroAs.Models;
 
 namespace repositoriosTP6
 {
-    public class ClienteRepository : IClientesRepository
+    public class ClientesRepository : IClientesRepository
     {
         private string cadenaConexion = "Data Source=DB/tienda.db;Cache=Shared";
 
@@ -28,7 +29,7 @@ namespace repositoriosTP6
 
         public void ModificarCliente(int id, Clientes cliente)
         {
-            var query = "UPDATE clientes SET nombre = @nombre, email = @email, telefono = @telefono WHERE ClienteId = @ClienteId";
+            var query = "UPDATE Clientes SET Nombre = @nombre, Email = @email, Telefono = @telefono WHERE ClienteId = @ClienteId";
             using (var connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
@@ -38,9 +39,13 @@ namespace repositoriosTP6
                     command.Parameters.AddWithValue("@nombre", cliente.Nombre);
                     command.Parameters.AddWithValue("@email", cliente.Email);
                     command.Parameters.AddWithValue("@telefono", cliente.Telefono);
-                    command.ExecuteNonQuery();
+                    int filasAfectadas = command.ExecuteNonQuery();
+
+                    if (filasAfectadas == 0)
+                    {
+                        throw new Exception("No se encontró el cliente para modificar.");
+                    }
                 }
-                connection.Close();
             }
         }
 

@@ -1,4 +1,4 @@
-@model List<tl2_tp6_2024_ElZorroAs.Models.Presupuestos>
+@model IEnumerable<tl2_tp6_2024_ElZorroAs.Models.Presupuestos>
 
 @{
     ViewData["Title"] = "Lista de Presupuestos";
@@ -6,13 +6,12 @@
 
 <h2>Lista de Presupuestos</h2>
 
-<table class="table table-striped">
+<table class="table">
     <thead>
         <tr>
             <th>ID</th>
-            <th>Destinatario</th>
+            <th>Cliente</th>
             <th>Fecha de Creación</th>
-            <th>Monto Total</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -21,20 +20,16 @@
         {
             <tr>
                 <td>@presupuesto.IdPresupuesto</td>
-                <td>@presupuesto.NombreDestinatario</td>
+                <td>@presupuesto.Cliente.Nombre</td>
                 <td>@presupuesto.FechaCreacion.ToShortDateString()</td>
-                <td>$@presupuesto.MontoPresupuestoConIva().ToString("N2")</td>
                 <td>
-                    <a class="btn btn-primary" asp-action="VerPresupuesto" asp-route-id="@presupuesto.IdPresupuesto">Ver</a>
-                    <a class="btn btn-danger" asp-action="EliminarPresupuesto" asp-route-id="@presupuesto.IdPresupuesto" onclick="return confirm('¿Está seguro de eliminar este presupuesto?');">Eliminar</a>
-
-                    <!-- Botón para agregar producto a este presupuesto -->
-                    <a class="btn btn-secondary" asp-action="AgregarProductoPresupuesto" asp-route-id="@presupuesto.IdPresupuesto">Agregar Producto</a>
+                    <a asp-action="VerPresupuesto" asp-route-id="@presupuesto.IdPresupuesto" class="btn btn-info">Ver</a>
+                    <a asp-action="AgregarProducto" asp-route-idPresupuesto="@presupuesto.IdPresupuesto" class="btn btn-primary">Agregar Producto</a>
+                    <a asp-action="EliminarPresupuesto" asp-route-id="@presupuesto.IdPresupuesto" class="btn btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar este presupuesto?');">Eliminar</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a class="btn btn-success" asp-action="CrearPresupuesto">Crear Nuevo Presupuesto</a>
-
+<a asp-action="CrearPresupuesto" class="btn btn-success">Crear Nuevo Presupuesto</a>

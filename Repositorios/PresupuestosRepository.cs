@@ -107,21 +107,6 @@ namespace repositoriosTP6
                 throw new Exception($"Error al agregar producto al presupuesto: {ex.Message}");
             }
         }
-        /*
-        public void EliminarPresupuesto(int id)
-        {
-            using (var connection = new SqliteConnection(cadenaConexion))
-            {
-                connection.Open();
-                string query = "DELETE FROM Presupuestos WHERE idPresupuesto = @id";
-                using (var command = new SqliteCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@id", id);
-                    command.ExecuteNonQuery();
-                }
-            }
-        }*/
-
         public void EliminarPresupuesto(int id)
         {
             using (var connection = new SqliteConnection(cadenaConexion))

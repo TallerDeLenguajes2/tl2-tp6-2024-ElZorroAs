@@ -8,7 +8,7 @@ builder.Services.AddControllersWithViews();
 // Inyección de dependencias (sin registros duplicados)
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestoRepository, PresupuestosRepository>();
-
+builder.Services.AddScoped<IClientesRepository, ClientesRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,5 +28,5 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Presupuestos}/{action=ListarPresupuesto}/{id?}");
+    pattern: "{controller=Clientes}/{action=ListarClientes}/{id?}");
 app.Run();

@@ -14,7 +14,6 @@
             @foreach (var producto in ViewBag.Productos)
             {
                 <option value="@producto.IdProducto">@producto.Descripcion</option>
-
             }
         </select>
     </div>
@@ -28,3 +27,7 @@
     <a asp-action="ListarPresupuesto" class="btn btn-secondary">Cancelar</a>
 </form>
 
+<div>
+    <h4>Cliente: @ViewBag.ClienteNombre</h4>
+</div>
+@section Scripts{<partial name="_ValidationScriptsPartial"/>}

@@ -6,7 +6,10 @@ public class Clientes
     public string Nombre { get; private set; }
     public string Email { get; private set; }
     public string Telefono { get; private set; }
+    public Clientes()
+    {
 
+    }
     // Constructor sin ID (para crear un nuevo cliente)
     public Clientes(string nombre, string email, string telefono)
     {
