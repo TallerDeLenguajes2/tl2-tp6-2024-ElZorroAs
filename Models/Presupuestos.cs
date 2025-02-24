@@ -1,7 +1,7 @@
 /*
 *Presupuestos
 ○ int IdPresupuesto
-○ string nombreDestinatario
+○ Cliente Cliente
 ○ List<PresupuestoDetalle> detalle
 ○ Metodos
 ■ MontoPresupuesto ()
@@ -15,24 +15,24 @@ namespace tl2_tp6_2024_ElZorroAs.Models;
 public class Presupuestos
 {
 
-    public Presupuestos(string nombreDestinatario, DateTime fechaCreacion, List<PresupuestosDetalle> detalle = null)
+    public Presupuestos(Clientes cliente, DateTime fechaCreacion, List<PresupuestosDetalle> detalle = null)
     {
 
-        NombreDestinatario = nombreDestinatario;
+        Cliente = cliente;
         FechaCreacion = fechaCreacion;  // Aquí se pasa la fecha al crear el presupuesto
         Detalle = detalle ?? new List<PresupuestosDetalle>();
     }
-    public Presupuestos(int idPresupuesto, string nombreDestinatario, DateTime fechaCreacion, List<PresupuestosDetalle> detalle = null)
+    public Presupuestos(int idPresupuesto, Clientes cliente, DateTime fechaCreacion, List<PresupuestosDetalle> detalle = null)
     {
         IdPresupuesto = idPresupuesto;
-        NombreDestinatario = nombreDestinatario;
+        Cliente = cliente;
         FechaCreacion = fechaCreacion;  // Aquí se pasa la fecha al crear el presupuesto
         Detalle = detalle ?? new List<PresupuestosDetalle>();
     }
 
     public int IdPresupuesto { get; private set; }
 
-    public string NombreDestinatario { get; private set; }
+    public Clientes Cliente { get; private set; }
 
     public List<PresupuestosDetalle> Detalle { get; private set; }
 
