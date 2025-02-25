@@ -146,79 +146,147 @@ namespace repositoriosTP6
             }
         }
 
-        public Presupuestos ObtenerPresupuesto(int id) {
-    ProductoRepository productoRepository = new ProductoRepository();
-    ClientesRepository clientesRepository = new ClientesRepository();
-    Clientes cliente = null;
-    DateTime fechaCreacion = DateTime.MinValue;
-    List<PresupuestosDetalle> detalles = new List<PresupuestosDetalle>();
+        public Presupuestos ObtenerPresupuesto(int id)
+        {
+            ProductoRepository productoRepository = new ProductoRepository();
+            ClientesRepository clientesRepository = new ClientesRepository();
+            Clientes cliente = null;
+            DateTime fechaCreacion = DateTime.MinValue;
+            List<PresupuestosDetalle> detalles = new List<PresupuestosDetalle>();
 
-    using (var connection = new SqliteConnection(cadenaConexion)) {
-        connection.Open();
-        string query = @"SELECT idPresupuesto, ClienteId, FechaCreacion, idProducto, Cantidad 
+            using (var connection = new SqliteConnection(cadenaConexion))
+            {
+                connection.Open();
+                string query = @"SELECT idPresupuesto, ClienteId, FechaCreacion, idProducto, Cantidad 
                          FROM Presupuestos P
                          INNER JOIN PresupuestosDetalle PD USING(idPresupuesto)
                          WHERE P.idPresupuesto = @id";
 
-        using (var command = new SqliteCommand(query, connection)) {
-            command.Parameters.AddWithValue("@id", id);
-            using (var reader = command.ExecuteReader()) {
-                while (reader.Read()) {
-                    if (fechaCreacion == DateTime.MinValue) {
-                        int clienteId = reader.GetInt32(1);
-                        cliente = clientesRepository.ObtenerCliente(clienteId);
-                        fechaCreacion = reader.GetDateTime(2);
-                    }
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", id);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (fechaCreacion == DateTime.MinValue)
+                            {
+                                int clienteId = reader.GetInt32(1);
+                                cliente = clientesRepository.ObtenerCliente(clienteId);
+                                fechaCreacion = reader.GetDateTime(2);
+                            }
 
-                    var producto = productoRepository.ObtenerProducto(reader.GetInt32(3));
-                    int cantidad = reader.GetInt32(4);
-                    detalles.Add(new PresupuestosDetalle(producto, cantidad));
+                            var producto = productoRepository.ObtenerProducto(reader.GetInt32(3));
+                            int cantidad = reader.GetInt32(4);
+                            detalles.Add(new PresupuestosDetalle(producto, cantidad));
+                        }
+                    }
                 }
             }
+
+            return new Presupuestos(id, cliente, fechaCreacion, detalles);
         }
-    }
 
-    return new Presupuestos(id, cliente, fechaCreacion, detalles);
-}
+        public void ModificarPresupuesto(Presupuestos presupuesto)
+        {
+            using (var connection = new SqliteConnection(cadenaConexion))
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction()) // 🔹 Se usa transacción para asegurar consistencia
+                {
+                    try
+                    {
+                        // 🔹 1️⃣ Actualizar el presupuesto (cliente y fecha)
+                        string queryPresupuesto =
+                            "UPDATE Presupuestos SET ClienteId = @ClienteId, FechaCreacion = @FechaCreacion WHERE IdPresupuesto = @IdPresupuesto";
 
+                        using (var command = new SqliteCommand(queryPresupuesto, connection, transaction))
+                        {
+                            command.Parameters.AddWithValue("@ClienteId", presupuesto.Cliente.ClienteId);
+                            command.Parameters.AddWithValue("@FechaCreacion", presupuesto.FechaCreacion.ToString("yyyy-MM-dd"));
+                            command.Parameters.AddWithValue("@IdPresupuesto", presupuesto.IdPresupuesto);
+                            command.ExecuteNonQuery();
+                        }
 
-         public List<Presupuestos> ListarPresupuestos() {
-        List<Presupuestos> listaPresupuestos = new List<Presupuestos>();
-        ClientesRepository clientesRepository = new ClientesRepository();
-        ProductoRepository productoRepository = new ProductoRepository();
+                        // 🔹 2️⃣ Eliminar detalles antiguos
+                        string queryDeleteDetalle = "DELETE FROM PresupuestosDetalle WHERE IdPresupuesto = @IdPresupuesto";
+                        using (var command = new SqliteCommand(queryDeleteDetalle, connection, transaction))
+                        {
+                            command.Parameters.AddWithValue("@IdPresupuesto", presupuesto.IdPresupuesto);
+                            command.ExecuteNonQuery();
+                        }
 
-        using (var connection = new SqliteConnection(cadenaConexion)) {
-            connection.Open();
-            string query = "SELECT idPresupuesto, ClienteId, FechaCreacion FROM Presupuestos";
-            using (var command = new SqliteCommand(query, connection)) {
-                using (var reader = command.ExecuteReader()) {
-                    while (reader.Read()) {
-                        int idPresupuesto = reader.GetInt32(0);
-                        int clienteId = reader.GetInt32(1);
-                        DateTime fechaCreacion = reader.GetDateTime(2);
+                        // 🔹 3️⃣ Insertar nuevos detalles
+                        string queryInsertDetalle =
+                            "INSERT INTO PresupuestosDetalle (IdPresupuesto, IdProducto, Cantidad) VALUES (@IdPresupuesto, @IdProducto, @Cantidad)";
 
-                        var cliente = clientesRepository.ObtenerCliente(clienteId);
-                        List<PresupuestosDetalle> detalles = new List<PresupuestosDetalle>();
-
-                        string queryDetalles = @"SELECT idProducto, Cantidad FROM PresupuestosDetalle WHERE idPresupuesto = @idPresupuesto";
-                        var commandDetalles = new SqliteCommand(queryDetalles, connection);
-                        commandDetalles.Parameters.AddWithValue("@idPresupuesto", idPresupuesto);
-                        using (var readerDetalles = commandDetalles.ExecuteReader()) {
-                            while (readerDetalles.Read()) {
-                                var producto = productoRepository.ObtenerProducto(readerDetalles.GetInt32(0));
-                                int cantidad = readerDetalles.GetInt32(1);
-                                detalles.Add(new PresupuestosDetalle(producto, cantidad));
+                        foreach (var detalle in presupuesto.Detalle)
+                        {
+                            using (var command = new SqliteCommand(queryInsertDetalle, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@IdPresupuesto", presupuesto.IdPresupuesto);
+                                command.Parameters.AddWithValue("@IdProducto", detalle.Producto.IdProducto);
+                                command.Parameters.AddWithValue("@Cantidad", detalle.Cantidad);
+                                command.ExecuteNonQuery();
                             }
                         }
 
-                        listaPresupuestos.Add(new Presupuestos(idPresupuesto, cliente, fechaCreacion, detalles));
+                        transaction.Commit(); // 🔹 Guardar cambios en la base de datos
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback(); // 🔹 Deshacer cambios si hay error
+                        throw new Exception("Error al modificar el presupuesto", ex);
                     }
                 }
             }
         }
 
-        return listaPresupuestos;
-    }
+        public List<Presupuestos> ListarPresupuestos()
+        {
+            List<Presupuestos> listaPresupuestos = new List<Presupuestos>();
+            ClientesRepository clientesRepository = new ClientesRepository();
+            ProductoRepository productoRepository = new ProductoRepository();
+
+            using (var connection = new SqliteConnection(cadenaConexion))
+            {
+                connection.Open();
+                string query = "SELECT idPresupuesto, ClienteId, FechaCreacion FROM Presupuestos";
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int idPresupuesto = reader.GetInt32(0);
+                            int clienteId = reader.GetInt32(1);
+                            DateTime fechaCreacion = reader.GetDateTime(2);
+
+                            var cliente = clientesRepository.ObtenerCliente(clienteId);
+                            List<PresupuestosDetalle> detalles = new List<PresupuestosDetalle>();
+
+                            string queryDetalles = @"SELECT idProducto, Cantidad FROM PresupuestosDetalle WHERE idPresupuesto = @idPresupuesto";
+                            var commandDetalles = new SqliteCommand(queryDetalles, connection);
+                            commandDetalles.Parameters.AddWithValue("@idPresupuesto", idPresupuesto);
+                            using (var readerDetalles = commandDetalles.ExecuteReader())
+                            {
+                                while (readerDetalles.Read())
+                                {
+                                    var producto = productoRepository.ObtenerProducto(readerDetalles.GetInt32(0));
+                                    int cantidad = readerDetalles.GetInt32(1);
+                                    detalles.Add(new PresupuestosDetalle(producto, cantidad));
+                                }
+                            }
+
+                            listaPresupuestos.Add(new Presupuestos(idPresupuesto, cliente, fechaCreacion, detalles));
+                        }
+                    }
+                }
+            }
+
+            return listaPresupuestos;
+        }
 
     }
 }
+
