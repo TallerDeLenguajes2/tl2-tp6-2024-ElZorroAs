@@ -12,20 +12,27 @@ namespace repositoriosTP6
 
         public void CrearCliente(Clientes cliente)
         {
-            var query = "INSERT INTO clientes (nombre, email, telefono) VALUES (@nombre, @email, @telefono)";
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+                var query = "INSERT INTO clientes (nombre, email, telefono) VALUES (@nombre, @email, @telefono)";
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    command.Parameters.AddWithValue("@nombre", cliente.Nombre);
-                    command.Parameters.AddWithValue("@email", cliente.Email);
-                    command.Parameters.AddWithValue("@telefono", cliente.Telefono);
-                    command.ExecuteNonQuery();
+                    connection.Open();
+                    using (var command = new SqliteCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@nombre", cliente.Nombre);
+                        command.Parameters.AddWithValue("@email", cliente.Email);
+                        command.Parameters.AddWithValue("@telefono", cliente.Telefono);
+                        command.ExecuteNonQuery();
+                    }
                 }
-                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al crear el cliente", ex);
             }
         }
+
 
         public void ModificarCliente(int id, Clientes cliente)
         {
