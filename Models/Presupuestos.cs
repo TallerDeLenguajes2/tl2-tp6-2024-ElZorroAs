@@ -38,9 +38,9 @@ public class Presupuestos
 
     public DateTime FechaCreacion { get; private set; } // Nueva propiedad
 
-    public double MontoPresupuesto()
+    public decimal MontoPresupuesto()
     {
-        double monto = 0.0;
+        decimal monto = 0.0m;
         foreach (var item in Detalle)
         {
             monto += (item.Producto.Precio * item.Cantidad);
@@ -48,9 +48,10 @@ public class Presupuestos
         return monto;
     }
 
-    public double MontoPresupuestoConIva()
+
+    public decimal MontoPresupuestoConIva()
     {
-        const double IVA = 0.21;
+        const decimal IVA = 0.21m; // Definir IVA como decimal
         return MontoPresupuesto() * (1 + IVA);
     }
 
