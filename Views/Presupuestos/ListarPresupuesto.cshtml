@@ -1,17 +1,14 @@
-@model IEnumerable<tl2_tp6_2024_ElZorroAs.Models.Presupuestos>
+@* ListarPresupuesto.cshtml *@
+@model List<tl2_tp6_2024_ElZorroAs.Models.Presupuestos>
 
-@{
-    ViewData["Title"] = "Lista de Presupuestos";
-}
-
-<h2>Lista de Presupuestos</h2>
-
+<h2>Listado de Presupuestos</h2>
+<a href="@Url.Action("CrearPresupuesto", "Presupuestos")" class="btn btn-primary">Crear Presupuesto</a>
 <table class="table">
     <thead>
         <tr>
             <th>ID</th>
             <th>Cliente</th>
-            <th>Fecha de Creación</th>
+            <th>Fecha</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -23,13 +20,12 @@
                 <td>@presupuesto.Cliente.Nombre</td>
                 <td>@presupuesto.FechaCreacion.ToShortDateString()</td>
                 <td>
-                    <a asp-action="VerPresupuesto" asp-route-id="@presupuesto.IdPresupuesto" class="btn btn-info">Ver</a>
-                    <a asp-action="AgregarProducto" asp-route-idPresupuesto="@presupuesto.IdPresupuesto" class="btn btn-primary">Agregar Producto</a>
-                    <a asp-action="EliminarPresupuesto" asp-route-id="@presupuesto.IdPresupuesto" class="btn btn-danger" onclick="return confirm('¿Está seguro de que desea eliminar este presupuesto?');">Eliminar</a>
+                    <a href="@Url.Action("VerPresupuesto", "Presupuestos", new { id = presupuesto.IdPresupuesto })" class="btn btn-info">Ver</a>
+                    <a href="@Url.Action("AgregarProducto", "Presupuestos", new { idPresupuesto = presupuesto.IdPresupuesto })" class="btn btn-success">Agregar Producto</a>
+                    <a href="@Url.Action("Modificar", "Presupuestos", new { id = presupuesto.IdPresupuesto })" class="btn btn-warning">Modificar</a>
+                    <a href="@Url.Action("EliminarPresupuesto", "Presupuestos", new { id = presupuesto.IdPresupuesto })" class="btn btn-danger">Eliminar</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-<a asp-action="CrearPresupuesto" class="btn btn-success">Crear Nuevo Presupuesto</a>

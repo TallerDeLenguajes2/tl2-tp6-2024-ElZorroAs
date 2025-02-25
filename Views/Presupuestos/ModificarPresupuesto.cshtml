@@ -1,0 +1,33 @@
+@model tl2_tp6_2024_ElZorroAs.ViewModels.PresupuestoViewModel
+
+@{
+    ViewData["Title"] = "Modificar Presupuesto";
+}
+
+<h2>Modificar Presupuesto</h2>
+
+<form asp-controller="Presupuestos" asp-action="ModificarPresupuesto" method="post">
+    @Html.AntiForgeryToken()
+
+    <!-- Enviar el ID del presupuesto -->
+    <input type="hidden" name="IdPresupuesto" value="@Model.IdPresupuesto" />
+
+    <label for="FechaCreacion">Fecha de Creación:</label>
+    <input type="date" name="FechaCreacion" value="@Model.FechaCreacion.ToString("yyyy-MM-dd")" required />
+
+    <div id="productosContainer">
+        @for (var i = 0; i < Model.Detalle.Count; i++)
+        {
+            <input type="hidden" name="IdProductos[]" value="@Model.Detalle[i].Producto.IdProducto" />
+            <label>@Model.Detalle[i].Producto.Descripcion - Cantidad:</label>
+            <input type="number" name="Cantidades[]" value="@Model.Detalle[i].Cantidad" required min="0" />
+        }
+    </div>
+
+    <button type="submit">Guardar</button>
+</form>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

@@ -1,18 +1,22 @@
-@model tl2_tp6_2024_ElZorroAs.Models.Clientes
-
-@{
-    ViewData["Title"] = "Crear Presupuesto";
-}
+@* CrearPresupuesto.cshtml *@
+@model tl2_tp6_2024_ElZorroAs.ViewModels.PresupuestoViewModel
 
 <h2>Crear Presupuesto</h2>
 
-<form asp-action="CrearPresupuesto" method="post">
+<form asp-action="CrearPresupuesto" asp-controller="Presupuestos" method="post">
     <div class="form-group">
-        <label for="nombreDestinatario">Nombre del Cliente:</label>
-        <input type="text" name="nombreDestinatario" class="form-control" required />
+        <label>Cliente</label>
+        <select asp-for="ClienteId" class="form-control">
+            <option value="">Seleccione un Cliente</option>
+            @foreach (var cliente in Model.ClientesDisponibles)
+            {
+                <option value="@cliente.ClienteId">@cliente.Nombre</option>
+            }
+        </select>
     </div>
-
-    <button type="submit" class="btn btn-primary">Crear Presupuesto</button>
-    <a asp-action="ListarPresupuesto" class="btn btn-secondary">Cancelar</a>
+    <button type="submit" class="btn btn-primary">Guardar</button>
 </form>
-@section Scripts{<partial name="_ValidationScriptsPartial"/>}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

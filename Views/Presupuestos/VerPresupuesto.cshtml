@@ -1,34 +1,26 @@
+@* VerPresupuesto.cshtml *@
 @model tl2_tp6_2024_ElZorroAs.Models.Presupuestos
 
-@{
-    ViewData["Title"] = "Ver Presupuesto";
-}
-
-<h2>Ver Presupuesto</h2>
-
-<div>
-    <h4>ID Presupuesto: @Model.IdPresupuesto</h4>
-    <h4>Cliente: @Model.Cliente.Nombre</h4>
-    <h4>Fecha de Creación: @Model.FechaCreacion.ToShortDateString()</h4>
-</div>
-
-<h3>Detalles del Presupuesto</h3>
+<h2>Detalles del Presupuesto</h2>
+<p><strong>Cliente:</strong> @Model.Cliente.Nombre</p>
+<p><strong>Fecha:</strong> @Model.FechaCreacion.ToShortDateString()</p>
+<h3>Productos</h3>
 <table class="table">
     <thead>
         <tr>
             <th>Producto</th>
             <th>Cantidad</th>
+            <th>Precio</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var detalle in Model.Detalle)
+        @foreach (var item in Model.Detalle)
         {
             <tr>
-                <td>@detalle.Producto.Descripcion</td>
-                <td>@detalle.Cantidad</td>
+                <td>@item.Producto.Descripcion</td>
+                <td>@item.Cantidad</td>
+                <td>@item.Producto.Precio</td>
             </tr>
         }
     </tbody>
 </table>
-
-<a asp-action="ListarPresupuesto" class="btn btn-secondary">Volver a la Lista</a>
