@@ -9,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestoRepository, PresupuestosRepository>();
 builder.Services.AddScoped<IClientesRepository, ClientesRepository>();
+builder.Services.AddSingleton<IUsuariosRepository, UsuariosRepository>(); // XD Singleton
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
