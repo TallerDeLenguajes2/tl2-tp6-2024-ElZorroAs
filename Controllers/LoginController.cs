@@ -29,7 +29,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
 
             if (isAuthenticated == "true" && !string.IsNullOrEmpty(rol))
             {
-                return RedirectToAction("Index", "Presupuestos");
+                return RedirectToAction("ListarPresupuesto", "Presupuestos");
             }
 
             return View(new LoginViewModel { IsAuthenticated = false });
@@ -56,7 +56,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 HttpContext.Session.SetString("UserRole", user.Rol);
                 HttpContext.Session.SetInt32("UserId", user.IdUsuario);
 
-                return RedirectToAction("Index", "Presupuestos");
+                return RedirectToAction("ListarPresupuesto", "Presupuestos");
             }
 
             _logger.LogWarning("Intento de login fallido: Usuario o contraseña incorrectos.");

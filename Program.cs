@@ -5,12 +5,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDistributedMemoryCache(); // Necesario para usar sesiones
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Tiempo de expiración de la sesión
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Inyección de dependencias (sin registros duplicados)
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestoRepository, PresupuestosRepository>();
 builder.Services.AddScoped<IClientesRepository, ClientesRepository>();
 builder.Services.AddSingleton<IUsuariosRepository, UsuariosRepository>(); // XD Singleton
 var app = builder.Build();
+
+// Usar sesiones
+app.UseSession();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -29,5 +40,5 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Presupuestos}/{action=ListarPresupuesto}/{id?}");
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 app.Run();

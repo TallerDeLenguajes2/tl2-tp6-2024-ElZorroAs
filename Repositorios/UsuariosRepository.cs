@@ -28,9 +28,9 @@ namespace repositoriosTP6
                     conexion.Open();
                     var comando = conexion.CreateCommand();
                     comando.CommandText = @"
-                SELECT id_usuario, Nombre, Usuario, Contraseña, Rol
-                FROM Usuarios
-                WHERE Usuario = @usuario AND Contraseña = @contraseña";
+                        SELECT Id, Nombre, Usuario, Contraseña, Rol
+                        FROM Usuarios
+                        WHERE Usuario = @usuario AND Contraseña = @contraseña";
 
                     comando.Parameters.AddWithValue("@usuario", usuario);
                     comando.Parameters.AddWithValue("@contraseña", contraseña);
@@ -40,7 +40,7 @@ namespace repositoriosTP6
                         if (lector.Read())
                         {
                             return new Usuarios(
-                                lector.GetInt32(lector.GetOrdinal("id_usuario")),
+                                lector.GetInt32(lector.GetOrdinal("Id")),
                                 lector.GetString(lector.GetOrdinal("Nombre")),
                                 lector.GetString(lector.GetOrdinal("Usuario")),
                                 lector.GetString(lector.GetOrdinal("Contraseña")),
@@ -58,7 +58,6 @@ namespace repositoriosTP6
             return null;
         }
 
-
         public List<Usuarios> ListarUsuarios()
         {
             var usuarios = new List<Usuarios>();
@@ -69,14 +68,14 @@ namespace repositoriosTP6
                 {
                     conexion.Open();
                     var comando = conexion.CreateCommand();
-                    comando.CommandText = "SELECT id_usuario, Nombre, Usuario, Contraseña, Rol FROM Usuarios";
+                    comando.CommandText = "SELECT Id, Nombre, Usuario, Contraseña, Rol FROM Usuarios";
 
                     using (var lector = comando.ExecuteReader())
                     {
                         while (lector.Read())
                         {
                             var usuario = new Usuarios(
-                                lector.GetInt32(lector.GetOrdinal("id_usuario")),
+                                lector.GetInt32(lector.GetOrdinal("Id")),
                                 lector.GetString(lector.GetOrdinal("Nombre")),
                                 lector.GetString(lector.GetOrdinal("Usuario")),
                                 lector.GetString(lector.GetOrdinal("Contraseña")),
@@ -105,9 +104,9 @@ namespace repositoriosTP6
                     conexion.Open();
                     var comando = conexion.CreateCommand();
                     comando.CommandText = @"
-                        SELECT id_usuario, Nombre, Usuario, Contraseña, Rol
+                        SELECT Id, Nombre, Usuario, Contraseña, Rol
                         FROM Usuarios
-                        WHERE id_usuario = @id";
+                        WHERE Id = @id";
 
                     comando.Parameters.AddWithValue("@id", id);
 
@@ -116,7 +115,7 @@ namespace repositoriosTP6
                         if (lector.Read())
                         {
                             return new Usuarios(
-                                lector.GetInt32(lector.GetOrdinal("id_usuario")),
+                                lector.GetInt32(lector.GetOrdinal("Id")),
                                 lector.GetString(lector.GetOrdinal("Nombre")),
                                 lector.GetString(lector.GetOrdinal("Usuario")),
                                 lector.GetString(lector.GetOrdinal("Contraseña")),
@@ -132,12 +131,13 @@ namespace repositoriosTP6
             }
             return null;
         }
+
         public int? ObtenerIdClientePorUsuario(int idUsuario)
         {
             using (var connection = new SqliteConnection(cadenaConexion))
             {
                 connection.Open();
-                string query = "SELECT idCliente FROM Usuarios WHERE id_usuario = @idUsuario";
+                string query = "SELECT IdCliente FROM Usuarios WHERE Id = @idUsuario";
 
                 using (var command = new SqliteCommand(query, connection))
                 {
