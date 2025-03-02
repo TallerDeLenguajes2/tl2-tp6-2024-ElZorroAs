@@ -6,15 +6,21 @@ using tl2_tp6_2024_ElZorroAs.Models;
 
 namespace repositoriosTP6
 {
+
     public class PresupuestosRepository : IPresupuestoRepository
+
     {
         private string cadenaConexion = "Data Source=db/Tienda.db;Cache=Shared";
         private readonly ILogger<PresupuestosRepository> _logger;
+        private readonly IClientesRepository _clienteRepository;
+        private readonly IProductoRepository _productoRepository;
 
         // Inyectamos el logger en el constructor
-        public PresupuestosRepository(ILogger<PresupuestosRepository> logger)
+        public PresupuestosRepository(ILogger<PresupuestosRepository> logger, IClientesRepository clienteRepository,IProductoRepository productoRepository)
         {
             _logger = logger;
+            _clienteRepository = clienteRepository;
+            _productoRepository = productoRepository;
         }
         public void CrearPresupuesto(Presupuestos presupuesto)
         {
@@ -148,8 +154,8 @@ namespace repositoriosTP6
 
         public Presupuestos ObtenerPresupuesto(int id)
         {
-            ProductoRepository productoRepository = new ProductoRepository();
-            ClientesRepository clientesRepository = new ClientesRepository();
+
+
             Clientes cliente = null;
             DateTime fechaCreacion = DateTime.MinValue;
             List<PresupuestosDetalle> detalles = new List<PresupuestosDetalle>();
@@ -172,11 +178,11 @@ namespace repositoriosTP6
                             if (fechaCreacion == DateTime.MinValue)
                             {
                                 int clienteId = reader.GetInt32(1);
-                                cliente = clientesRepository.ObtenerCliente(clienteId);
+                                cliente = _clienteRepository.ObtenerCliente(clienteId);
                                 fechaCreacion = reader.GetDateTime(2);
                             }
 
-                            var producto = productoRepository.ObtenerProducto(reader.GetInt32(3));
+                            var producto = _productoRepository.ObtenerProducto(reader.GetInt32(3));
                             int cantidad = reader.GetInt32(4);
                             detalles.Add(new PresupuestosDetalle(producto, cantidad));
                         }
@@ -245,8 +251,8 @@ namespace repositoriosTP6
         public List<Presupuestos> ListarPresupuestos()
         {
             List<Presupuestos> listaPresupuestos = new List<Presupuestos>();
-            ClientesRepository clientesRepository = new ClientesRepository();
-            ProductoRepository productoRepository = new ProductoRepository();
+
+
 
             using (var connection = new SqliteConnection(cadenaConexion))
             {
@@ -262,7 +268,7 @@ namespace repositoriosTP6
                             int clienteId = reader.GetInt32(1);
                             DateTime fechaCreacion = reader.GetDateTime(2);
 
-                            var cliente = clientesRepository.ObtenerCliente(clienteId);
+                            var cliente = _clienteRepository.ObtenerCliente(clienteId);
                             List<PresupuestosDetalle> detalles = new List<PresupuestosDetalle>();
 
                             string queryDetalles = @"SELECT idProducto, Cantidad FROM PresupuestosDetalle WHERE idPresupuesto = @idPresupuesto";
@@ -272,7 +278,7 @@ namespace repositoriosTP6
                             {
                                 while (readerDetalles.Read())
                                 {
-                                    var producto = productoRepository.ObtenerProducto(readerDetalles.GetInt32(0));
+                                    var producto = _productoRepository.ObtenerProducto(readerDetalles.GetInt32(0));
                                     int cantidad = readerDetalles.GetInt32(1);
                                     detalles.Add(new PresupuestosDetalle(producto, cantidad));
                                 }
