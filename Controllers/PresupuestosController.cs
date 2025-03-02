@@ -26,6 +26,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             _clienteRepository = clienteRepository;
         }
 
+        [AccessLevelAuthorize("Administrador", "Cliente")]
         [HttpGet]
         public IActionResult ListarPresupuesto()
         {
@@ -41,7 +42,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
-
+        [AccessLevelAuthorize("Administrador")]
         [HttpGet]
         public IActionResult CrearPresupuesto()
         {
@@ -59,7 +60,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
-
+        [AccessLevelAuthorize("Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult CrearPresupuesto(PresupuestoViewModel model)
@@ -92,6 +93,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View(model);
             }
         }
+        [AccessLevelAuthorize("Administrador", "Cliente")]
         [HttpGet]
         public IActionResult VerPresupuesto(int id)
         {
@@ -112,7 +114,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
-
+        [AccessLevelAuthorize("Administrador")]
         [HttpGet]
         public IActionResult AgregarProducto(int idPresupuesto)
         {
@@ -140,6 +142,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             }
         }
 
+        [AccessLevelAuthorize("Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AgregarProductoPresupuesto(AgregarProductoPresupuestoViewModel model)
@@ -171,9 +174,9 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
-
-       [HttpGet]
-public IActionResult ModificarPresupuesto(int id)
+        [AccessLevelAuthorize("Administrador")]
+        [HttpGet]
+        public IActionResult ModificarPresupuesto(int id)
         {
             try
             {
@@ -202,7 +205,7 @@ public IActionResult ModificarPresupuesto(int id)
             }
         }
 
-
+        [AccessLevelAuthorize("Administrador")]
         [HttpPost]
         [Route("Presupuestos/ModificarPresupuesto")]
         public IActionResult ModificarPresupuesto(int IdPresupuesto, DateTime FechaCreacion, int[] IdProductos, int[] Cantidades)
@@ -210,7 +213,7 @@ public IActionResult ModificarPresupuesto(int id)
             if (IdProductos == null || Cantidades == null || IdProductos.Length != Cantidades.Length)
             {
                 _logger.LogWarning("Error en la estructura de los datos enviados.");
-                return RedirectToAction("ListarPresupuesto"); 
+                return RedirectToAction("ListarPresupuesto");
             }
 
             try
@@ -251,7 +254,7 @@ public IActionResult ModificarPresupuesto(int id)
         }
 
 
-
+        [AccessLevelAuthorize("Administrador")]
         [HttpGet]
         public IActionResult EliminarPresupuesto(int id)
         {
