@@ -9,15 +9,14 @@ namespace repositoriosTP6
 {
     public class UsuariosRepository : IUsuariosRepository
     {
-        private string cadenaConexion;
+        private readonly string cadenaConexion;
         private readonly ILogger<UsuariosRepository> _logger; // Logger
 
-        public UsuariosRepository(IConfiguration configuracion, ILogger<UsuariosRepository> logger)
+        public UsuariosRepository(string cadenaDeConexion,ILogger<UsuariosRepository> logger)
         {
-            cadenaConexion = "Data Source=DB/Tienda.db;Cache=Shared";
+            cadenaConexion = cadenaDeConexion;
             _logger = logger; // Inicializamos el logger
         }
-
         public Usuarios ObtenerUsuario(string usuario, string contraseña)
         {
             if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(contraseña))
@@ -32,9 +31,9 @@ namespace repositoriosTP6
                     conexion.Open();
                     var comando = conexion.CreateCommand();
                     comando.CommandText = @"
-                        SELECT Id, Nombre, Usuario, Contraseña, Rol
-                        FROM Usuarios
-                        WHERE Usuario = @usuario";
+                SELECT Id, Nombre, Usuario, Contraseña, Rol
+                FROM Usuarios
+                WHERE Usuario = @usuario";
 
                     comando.Parameters.AddWithValue("@usuario", usuario);
 
@@ -44,7 +43,6 @@ namespace repositoriosTP6
                         {
                             string contraseñaAlmacenada = lector.GetString(lector.GetOrdinal("Contraseña"));
 
-                            // Asegúrate de que las contraseñas se comparan correctamente
                             if (contraseñaAlmacenada != contraseña) // Aquí deberías usar hashing
                             {
                                 _logger.LogWarning($"Intento de acceso inválido - Usuario: {usuario} Clave ingresada: {contraseña}");

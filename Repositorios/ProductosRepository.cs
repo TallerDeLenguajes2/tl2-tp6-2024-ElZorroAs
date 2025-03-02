@@ -8,11 +8,12 @@ namespace repositoriosTP6
 {
     public class ProductoRepository : IProductoRepository
     {
-        private string cadenaConexion = "Data Source=DB/tienda.db;Cache=Shared";
+        private readonly string cadenaConexion;
         private readonly ILogger<ProductoRepository> _logger; // Logger
 
-        public ProductoRepository(ILogger<ProductoRepository> logger)
+        public ProductoRepository(string cadenaDeConexion, ILogger<ProductoRepository> logger)
         {
+            cadenaConexion = cadenaDeConexion;
             _logger = logger; // Inicializamos el logger
         }
 

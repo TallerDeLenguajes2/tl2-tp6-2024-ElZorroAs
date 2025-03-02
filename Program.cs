@@ -5,7 +5,7 @@ using tl2_tp6_2024_ElZorroAs.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agregar controladores con vistas
+// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 // Configurar autenticación con cookies
@@ -25,7 +25,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Inyección de dependencias
+// Obtener la cadena de conexión desde appsettings.json
+var cadenaDeConexion = builder.Configuration.GetConnectionString("SqliteConexion")!.ToString();
+builder.Services.AddSingleton<string>(cadenaDeConexion); // Inyección de la cadena de conexión
+
+// Aquí se realiza la inyección de los repositorios
 builder.Services.AddScoped<IProductoRepository, ProductoRepository>();
 builder.Services.AddScoped<IPresupuestoRepository, PresupuestosRepository>();
 builder.Services.AddScoped<IClientesRepository, ClientesRepository>();

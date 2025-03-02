@@ -10,14 +10,15 @@ namespace repositoriosTP6
     public class PresupuestosRepository : IPresupuestoRepository
 
     {
-        private string cadenaConexion = "Data Source=db/Tienda.db;Cache=Shared";
+        private readonly string cadenaConexion;
         private readonly ILogger<PresupuestosRepository> _logger;
         private readonly IClientesRepository _clienteRepository;
         private readonly IProductoRepository _productoRepository;
 
         // Inyectamos el logger en el constructor
-        public PresupuestosRepository(ILogger<PresupuestosRepository> logger, IClientesRepository clienteRepository,IProductoRepository productoRepository)
+        public PresupuestosRepository(string cadenaDeConexion,ILogger<PresupuestosRepository> logger, IClientesRepository clienteRepository,IProductoRepository productoRepository)
         {
+            cadenaConexion = cadenaDeConexion;
             _logger = logger;
             _clienteRepository = clienteRepository;
             _productoRepository = productoRepository;
