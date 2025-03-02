@@ -42,127 +42,176 @@ namespace repositoriosTP6
 
         public Clientes ObtenerClientePorUsuario(string usuarioNombre)
         {
-            Clientes cliente = null;
-            var query = @"SELECT c.ClienteId, c.nombre, c.email, c.telefono 
-                          FROM clientes c
-                          INNER JOIN usuarios u ON c.ClienteId = u.ClienteId
-                          WHERE u.Usuario = @usuarioNombre";
-
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+                Clientes cliente = null;
+                var query = @"SELECT c.ClienteId, c.nombre, c.email, c.telefono 
+                              FROM clientes c
+                              INNER JOIN usuarios u ON c.ClienteId = u.ClienteId
+                              WHERE u.Usuario = @usuarioNombre";
+
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    command.Parameters.AddWithValue("@usuarioNombre", usuarioNombre);
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    using (var command = new SqliteCommand(query, connection))
                     {
-                        if (reader.Read())
+                        command.Parameters.AddWithValue("@usuarioNombre", usuarioNombre);
+                        using (var reader = command.ExecuteReader())
                         {
-                            cliente = new Clientes(
-                                Convert.ToInt32(reader["ClienteId"]),
-                                reader["nombre"].ToString(),
-                                reader["email"].ToString(),
-                                reader["telefono"].ToString()
-                            );
-                            _logger.LogInformation($"El usuario {usuarioNombre} ingresó correctamente."); // Logueo de acceso exitoso
+                            if (reader.Read())
+                            {
+                                cliente = new Clientes(
+                                    Convert.ToInt32(reader["ClienteId"]),
+                                    reader["nombre"].ToString(),
+                                    reader["email"].ToString(),
+                                    reader["telefono"].ToString()
+                                );
+                                _logger.LogInformation($"El usuario {usuarioNombre} ingresó correctamente."); // Logueo de acceso exitoso
+                            }
+                            else
+                            {
+                                throw new Exception($"No se encontró un cliente para el usuario: {usuarioNombre}");
+                            }
                         }
                     }
                 }
-                connection.Close();
+                return cliente;
             }
-            return cliente;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString()); // Logueo del error
+                throw new Exception("Error al obtener el cliente por usuario", ex);
+            }
         }
 
         public void ModificarCliente(int id, Clientes cliente)
         {
-            var query = "UPDATE Clientes SET Nombre = @nombre, Email = @email, Telefono = @telefono WHERE ClienteId = @ClienteId";
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+                var query = "UPDATE Clientes SET Nombre = @nombre, Email = @email, Telefono = @telefono WHERE ClienteId = @ClienteId";
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    command.Parameters.AddWithValue("@ClienteId", id);
-                    command.Parameters.AddWithValue("@nombre", cliente.Nombre);
-                    command.Parameters.AddWithValue("@email", cliente.Email);
-                    command.Parameters.AddWithValue("@telefono", cliente.Telefono);
-                    int filasAfectadas = command.ExecuteNonQuery();
-
-                    if (filasAfectadas == 0)
+                    connection.Open();
+                    using (var command = new SqliteCommand(query, connection))
                     {
-                        throw new Exception("No se encontró el cliente para modificar.");
+                        command.Parameters.AddWithValue("@ClienteId", id);
+                        command.Parameters.AddWithValue("@nombre", cliente.Nombre);
+                        command.Parameters.AddWithValue("@email", cliente.Email);
+                        command.Parameters.AddWithValue("@telefono", cliente.Telefono);
+                        int filasAfectadas = command.ExecuteNonQuery();
+
+                        if (filasAfectadas == 0)
+                        {
+                            throw new Exception("No se encontró el cliente para modificar.");
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString()); // Logueo del error
+                throw new Exception("Error al modificar el cliente", ex);
             }
         }
 
         public List<Clientes> ListarClientes()
         {
-            var clientes = new List<Clientes>();
-            var query = "SELECT * FROM clientes";
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+                var clientes = new List<Clientes>();
+                var query = "SELECT * FROM clientes";
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    using (var command = new SqliteCommand(query, connection))
                     {
-                        while (reader.Read())
+                        using (var reader = command.ExecuteReader())
                         {
-                            var cliente = new Clientes(
-                                Convert.ToInt32(reader["ClienteId"]),
-                                reader["nombre"].ToString(),
-                                reader["email"].ToString(),
-                                reader["telefono"].ToString()
-                            );
-                            clientes.Add(cliente);
+                            while (reader.Read())
+                            {
+                                var cliente = new Clientes(
+                                    Convert.ToInt32(reader["ClienteId"]),
+                                    reader["nombre"].ToString(),
+                                    reader["email"].ToString(),
+                                    reader["telefono"].ToString()
+                                );
+                                clientes.Add(cliente);
+                            }
                         }
                     }
                 }
-                connection.Close();
+                return clientes;
             }
-            return clientes;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString()); // Logueo del error
+                throw new Exception("Error al listar los clientes", ex);
+            }
         }
 
         public Clientes ObtenerCliente(int id)
         {
-            Clientes cliente = null;
-            var query = "SELECT * FROM clientes WHERE ClienteId = @ClienteId";
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+                Clientes cliente = null;
+                var query = "SELECT * FROM clientes WHERE ClienteId = @ClienteId";
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    command.Parameters.AddWithValue("@ClienteId", id);
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    using (var command = new SqliteCommand(query, connection))
                     {
-                        if (reader.Read())
+                        command.Parameters.AddWithValue("@ClienteId", id);
+                        using (var reader = command.ExecuteReader())
                         {
-                            cliente = new Clientes(
-                                Convert.ToInt32(reader["ClienteId"]),
-                                reader["nombre"].ToString(),
-                                reader["email"].ToString(),
-                                reader["telefono"].ToString()
-                            );
+                            if (reader.Read())
+                            {
+                                cliente = new Clientes(
+                                    Convert.ToInt32(reader["ClienteId"]),
+                                    reader["nombre"].ToString(),
+                                    reader["email"].ToString(),
+                                    reader["telefono"].ToString()
+                                );
+                            }
+                            else
+                            {
+                                throw new Exception($"No se encontró un cliente con ID: {id}");
+                            }
                         }
                     }
                 }
-                connection.Close();
+                return cliente;
             }
-            return cliente;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString()); // Logueo del error
+                throw new Exception("Error al obtener el cliente", ex);
+            }
         }
 
         public void EliminarCliente(int id)
         {
-            var queryEliminarCliente = "DELETE FROM clientes WHERE ClienteId = @ClienteId";
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(queryEliminarCliente, connection))
+                var queryEliminarCliente = "DELETE FROM clientes WHERE ClienteId = @ClienteId";
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    command.Parameters.AddWithValue("@ClienteId", id);
-                    command.ExecuteNonQuery();
+                    connection.Open();
+                    using (var command = new SqliteCommand(queryEliminarCliente, connection))
+                    {
+                        command.Parameters.AddWithValue("@ClienteId", id);
+                        int filasAfectadas = command.ExecuteNonQuery();
+
+                        if (filasAfectadas == 0)
+                        {
+                            throw new Exception($"No se encontró un cliente con ID: {id} para eliminar.");
+                        }
+                    }
                 }
-                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString()); // Logueo del error
+                throw new Exception("Error al eliminar el cliente", ex);
             }
         }
 

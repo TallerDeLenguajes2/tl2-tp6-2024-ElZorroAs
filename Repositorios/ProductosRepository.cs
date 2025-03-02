@@ -52,7 +52,12 @@ namespace repositoriosTP6
                         command.Parameters.AddWithValue("@idProducto", id);
                         command.Parameters.AddWithValue("@descripcion", producto.Descripcion);
                         command.Parameters.AddWithValue("@precio", producto.Precio);
-                        command.ExecuteNonQuery();
+                        int filasAfectadas = command.ExecuteNonQuery();
+
+                        if (filasAfectadas == 0)
+                        {
+                            throw new Exception($"No se encontró el producto con ID: {id} para modificar.");
+                        }
                     }
                 }
             }
@@ -67,25 +72,32 @@ namespace repositoriosTP6
         {
             var productos = new List<Productos>();
             var query = "SELECT * FROM productos";
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    using (var command = new SqliteCommand(query, connection))
                     {
-                        while (reader.Read())
+                        using (var reader = command.ExecuteReader())
                         {
-                            var producto = new Productos(
-                                Convert.ToInt32(reader["idProducto"]),
-                                reader["descripcion"].ToString(),
-                                Convert.ToInt32(reader["precio"])
-                            );
-                            productos.Add(producto);
+                            while (reader.Read())
+                            {
+                                var producto = new Productos(
+                                    Convert.ToInt32(reader["idProducto"]),
+                                    reader["descripcion"].ToString(),
+                                    Convert.ToInt32(reader["precio"])
+                                );
+                                productos.Add(producto);
+                            }
                         }
                     }
                 }
-                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString()); // Logueo del error
+                throw new Exception("Error al listar los productos", ex);
             }
             return productos;
         }
@@ -94,25 +106,36 @@ namespace repositoriosTP6
         {
             Productos producto = null;
             var query = "SELECT * FROM productos WHERE idProducto = @idProducto";
-            using (var connection = new SqliteConnection(cadenaConexion))
+            try
             {
-                connection.Open();
-                using (var command = new SqliteCommand(query, connection))
+                using (var connection = new SqliteConnection(cadenaConexion))
                 {
-                    command.Parameters.AddWithValue("@idProducto", id);
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    using (var command = new SqliteCommand(query, connection))
                     {
-                        if (reader.Read())
+                        command.Parameters.AddWithValue("@idProducto", id);
+                        using (var reader = command.ExecuteReader())
                         {
-                            producto = new Productos(
-                                Convert.ToInt32(reader["idProducto"]),
-                                reader["descripcion"].ToString(),
-                                Convert.ToInt32(reader["precio"])
-                            );
+                            if (reader.Read())
+                            {
+                                producto = new Productos(
+                                    Convert.ToInt32(reader["idProducto"]),
+                                    reader["descripcion"].ToString(),
+                                    Convert.ToInt32(reader["precio"])
+                                );
+                            }
+                            else
+                            {
+                                throw new Exception($"No se encontró el producto con ID: {id}");
+                            }
                         }
                     }
                 }
-                connection.Close();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.ToString()); // Logueo del error
+                throw new Exception("Error al obtener el producto", ex);
             }
             return producto;
         }
@@ -130,7 +153,11 @@ namespace repositoriosTP6
                     using (var command = new SqliteCommand(queryEliminarReferencias, connection))
                     {
                         command.Parameters.AddWithValue("@idProducto", id);
-                        command.ExecuteNonQuery();
+                        int filasAfectadas = command.ExecuteNonQuery();
+                        if (filasAfectadas == 0)
+                        {
+                            throw new Exception($"No se encontraron referencias para el producto con ID: {id}");
+                        }
                     }
 
                     // Luego, eliminar el producto
@@ -138,10 +165,12 @@ namespace repositoriosTP6
                     using (var command = new SqliteCommand(queryEliminarProducto, connection))
                     {
                         command.Parameters.AddWithValue("@idProducto", id);
-                        command.ExecuteNonQuery();
+                        int filasAfectadas = command.ExecuteNonQuery();
+                        if (filasAfectadas == 0)
+                        {
+                            throw new Exception($"No se encontró el producto con ID: {id} para eliminar.");
+                        }
                     }
-
-                    connection.Close();
                 }
             }
             catch (Exception ex)

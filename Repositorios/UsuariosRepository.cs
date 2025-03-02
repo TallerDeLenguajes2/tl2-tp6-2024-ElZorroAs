@@ -61,6 +61,10 @@ namespace repositoriosTP6
                                 lector.GetString(lector.GetOrdinal("Rol"))
                             );
                         }
+                        else
+                        {
+                            throw new Exception($"No se encontró un usuario con el nombre: {usuario}");
+                        }
                     }
                 }
             }
@@ -69,8 +73,6 @@ namespace repositoriosTP6
                 _logger.LogError(ex.ToString()); // Logueo del error
                 throw new Exception("Error al obtener el usuario", ex);
             }
-
-            return null;
         }
 
         public List<Usuarios> ListarUsuarios()
@@ -138,6 +140,10 @@ namespace repositoriosTP6
                                 lector.GetString(lector.GetOrdinal("Rol"))
                             );
                         }
+                        else
+                        {
+                            throw new Exception($"No se encontró un usuario con ID: {id}");
+                        }
                     }
                 }
             }
@@ -146,7 +152,6 @@ namespace repositoriosTP6
                 _logger.LogError(ex.ToString()); // Logueo del error
                 throw new Exception("Error al obtener el usuario por ID", ex);
             }
-            return null;
         }
 
         public int? ObtenerIdClientePorUsuario(int idUsuario)
@@ -162,7 +167,11 @@ namespace repositoriosTP6
                     {
                         command.Parameters.AddWithValue("@idUsuario", idUsuario);
                         var result = command.ExecuteScalar();
-                        return result != null ? Convert.ToInt32(result) : (int?)null;
+                        if (result == null)
+                        {
+                            throw new Exception($"No se encontró un cliente asociado al usuario con ID: {idUsuario}");
+                        }
+                        return Convert.ToInt32(result);
                     }
                 }
             }
