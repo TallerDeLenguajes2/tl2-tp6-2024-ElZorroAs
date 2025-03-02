@@ -1,74 +1,59 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using repositoriosTP6;
-using tl2_tp6_2024_ElZorroAs.Models;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using tl2_tp6_2024_ElZorroAs.Services;
 using tl2_tp6_2024_ElZorroAs.ViewModel;
 
 namespace tl2_tp6_2024_ElZorroAs.Controllers
 {
     public class LoginController : Controller
     {
-        private readonly IUsuariosRepository _usuariosRepository;
-        private readonly IClientesRepository _repositorioCliente;
-        private readonly ILogger<LoginController> _logger;
+        private readonly IAuthenticationService _authService;
 
-
-        public LoginController(IUsuariosRepository usuariosRepository, ILogger<LoginController> logger, IClientesRepository repositorioCliente)
+        public LoginController(IAuthenticationService authService)
         {
-            _usuariosRepository = usuariosRepository;
-            _logger = logger;
-            _repositorioCliente = repositorioCliente;
+            _authService = authService;
         }
+
         [HttpGet]
         public IActionResult Index()
         {
-            var isAuthenticated = HttpContext.Session.GetString("IsAuthenticated");
-            var rol = HttpContext.Session.GetString("UserRole");
-
-            if (isAuthenticated == "true" && !string.IsNullOrEmpty(rol))
-            {
-                return RedirectToAction("ListarPresupuesto", "Presupuestos");
-            }
-
-            return View(new LoginViewModel { IsAuthenticated = false });
+            return View(new LoginViewModel());
         }
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel model)
+        public IActionResult Index(LoginViewModel model)
         {
-            _logger.LogInformation($"Intento de login con usuario: {model.Username}");
-
-            if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
+            if (!ModelState.IsValid)
             {
-                ViewData["Error"] = "Debe ingresar un usuario y una contraseña.";
-                return View("Index", new LoginViewModel { IsAuthenticated = false });
+                return View(model);
             }
 
-            var user = _usuariosRepository.ObtenerUsuario(model.Username, model.Password);
-
-            if (user != null)
+            // Validar que no estén vacíos
+            if (string.IsNullOrWhiteSpace(model.Username) || string.IsNullOrWhiteSpace(model.Password))
             {
-                _logger.LogInformation($"Usuario autenticado: {user.Usuario} con rol {user.Rol}");
+                model.ErrorMessage = "El usuario y la contraseña son obligatorios.";
+                return View(model);
+            }
 
+            // Intentar iniciar sesión
+            if (_authService.Login(model.Username, model.Password))
+            {
                 HttpContext.Session.SetString("IsAuthenticated", "true");
-                HttpContext.Session.SetString("UserRole", user.Rol);
-                HttpContext.Session.SetInt32("UserId", user.IdUsuario);
+
+                // Obtener el nivel de acceso de la sesión
+                var accessLevel = HttpContext.Session.GetString("AccessLevel") ?? "Cliente"; // "Cliente" por defecto
+                HttpContext.Session.SetString("AccessLevel", accessLevel);
 
                 return RedirectToAction("ListarPresupuesto", "Presupuestos");
             }
 
-            _logger.LogWarning("Intento de login fallido: Usuario o contraseña incorrectos.");
-            ViewData["Error"] = "Usuario o contraseña incorrectos";
-            return View("Index", new LoginViewModel { IsAuthenticated = false });
+            model.ErrorMessage = "Usuario o contraseña incorrectos.";
+            return View(model);
         }
-
-
 
         public IActionResult Logout()
         {
-            HttpContext.Session.Clear();
+            _authService.Logout(); // Llamar al servicio para limpiar la sesión
             return RedirectToAction("Index");
         }
     }

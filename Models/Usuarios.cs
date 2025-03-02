@@ -10,6 +10,10 @@ namespace tl2_tp6_2024_ElZorroAs.Models;public class Usuarios
     public string Rol { get; private set; }
     public Clientes Cliente { get; private set; }  
 
+    // Nueva propiedad de nivel de acceso
+    public int AccessLevel => Rol == "Administrador" ? 1 : 0;
+
+
     public Usuarios(string nombre, string usuarioNombre, string contraseña, string rol, Clientes cliente = null)
     {
         Nombre = nombre;

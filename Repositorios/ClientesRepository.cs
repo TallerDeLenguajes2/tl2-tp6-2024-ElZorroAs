@@ -33,6 +33,39 @@ namespace repositoriosTP6
             }
         }
 
+        public Clientes ObtenerClientePorUsuario(string usuarioNombre)
+{
+    Clientes cliente = null;
+    var query = @"SELECT c.ClienteId, c.nombre, c.email, c.telefono 
+                  FROM clientes c
+                  INNER JOIN usuarios u ON c.ClienteId = u.ClienteId
+                  WHERE u.Usuario = @usuarioNombre";
+
+    using (var connection = new SqliteConnection(cadenaConexion))
+    {
+        connection.Open();
+        using (var command = new SqliteCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@usuarioNombre", usuarioNombre);
+            using (var reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    cliente = new Clientes(
+                        Convert.ToInt32(reader["ClienteId"]),
+                        reader["nombre"].ToString(),
+                        reader["email"].ToString(),
+                        reader["telefono"].ToString()
+                    );
+                }
+            }
+        }
+        connection.Close();
+    }
+    return cliente;
+}
+
+
 
         public void ModificarCliente(int id, Clientes cliente)
         {

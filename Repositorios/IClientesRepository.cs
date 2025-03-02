@@ -10,5 +10,6 @@ namespace repositoriosTP6
         List<Clientes> ListarClientes();
         Clientes ObtenerCliente(int id);
         void EliminarCliente(int id);
+        Clientes ObtenerClientePorUsuario(string usuarioNombre);
     }
 }

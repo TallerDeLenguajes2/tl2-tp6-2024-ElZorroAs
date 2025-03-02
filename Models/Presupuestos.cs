@@ -14,7 +14,8 @@ namespace tl2_tp6_2024_ElZorroAs.Models;
 
 public class Presupuestos
 {
-
+// ✅ Constructor sin parámetros (para MVC)
+    public Presupuestos() { }
     public Presupuestos(Clientes cliente, DateTime fechaCreacion, List<PresupuestosDetalle> detalle = null)
     {
 

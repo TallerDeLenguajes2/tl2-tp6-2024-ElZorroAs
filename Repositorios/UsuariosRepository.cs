@@ -14,49 +14,57 @@ namespace repositoriosTP6
             cadenaConexion = "Data Source=DB/Tienda.db;Cache=Shared";
         }
 
-        public Usuarios ObtenerUsuario(string usuario, string contraseña)
+       public Usuarios ObtenerUsuario(string usuario, string contraseña)
+{
+    if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(contraseña))
+    {
+        throw new ArgumentException("Usuario y contraseña no pueden estar vacíos.");
+    }
+
+    try
+    {
+        using (var conexion = new SqliteConnection(cadenaConexion))
         {
-            if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrWhiteSpace(contraseña))
-            {
-                throw new ArgumentException("Usuario y contraseña no pueden estar vacíos.");
-            }
+            conexion.Open();
+            var comando = conexion.CreateCommand();
+            comando.CommandText = @"
+                SELECT Id, Nombre, Usuario, Contraseña, Rol
+                FROM Usuarios
+                WHERE Usuario = @usuario";
 
-            try
+            comando.Parameters.AddWithValue("@usuario", usuario);
+
+            using (var lector = comando.ExecuteReader())
             {
-                using (var conexion = new SqliteConnection(cadenaConexion))
+                if (lector.Read())
                 {
-                    conexion.Open();
-                    var comando = conexion.CreateCommand();
-                    comando.CommandText = @"
-                        SELECT Id, Nombre, Usuario, Contraseña, Rol
-                        FROM Usuarios
-                        WHERE Usuario = @usuario AND Contraseña = @contraseña";
+                    string contraseñaAlmacenada = lector.GetString(lector.GetOrdinal("Contraseña"));
 
-                    comando.Parameters.AddWithValue("@usuario", usuario);
-                    comando.Parameters.AddWithValue("@contraseña", contraseña);
-
-                    using (var lector = comando.ExecuteReader())
+                    // Asegúrate de que las contraseñas se comparan correctamente
+                    if (contraseñaAlmacenada != contraseña) // Aquí deberías usar hashing
                     {
-                        if (lector.Read())
-                        {
-                            return new Usuarios(
-                                lector.GetInt32(lector.GetOrdinal("Id")),
-                                lector.GetString(lector.GetOrdinal("Nombre")),
-                                lector.GetString(lector.GetOrdinal("Usuario")),
-                                lector.GetString(lector.GetOrdinal("Contraseña")),
-                                lector.GetString(lector.GetOrdinal("Rol"))
-                            );
-                        }
+                        return null;
                     }
+
+                    return new Usuarios(
+                        lector.GetInt32(lector.GetOrdinal("Id")),
+                        lector.GetString(lector.GetOrdinal("Nombre")),
+                        lector.GetString(lector.GetOrdinal("Usuario")),
+                        lector.GetString(lector.GetOrdinal("Contraseña")),
+                        lector.GetString(lector.GetOrdinal("Rol"))
+                    );
                 }
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener el usuario", ex);
-            }
-
-            return null;
         }
+    }
+    catch (Exception ex)
+    {
+        throw new Exception("Error al obtener el usuario", ex);
+    }
+
+    return null;
+}
+
 
         public List<Usuarios> ListarUsuarios()
         {
