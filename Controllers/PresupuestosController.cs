@@ -18,7 +18,8 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
         public PresupuestosController(
             ILogger<PresupuestosController> logger,
             IPresupuestoRepository presupuestoRepository,
-            IProductoRepository productoRepository, IClientesRepository clienteRepository)
+            IProductoRepository productoRepository,
+            IClientesRepository clienteRepository)
         {
             _logger = logger;
             _presupuestoRepository = presupuestoRepository;
@@ -42,6 +43,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
+
         [AccessLevelAuthorize("Administrador")]
         [HttpGet]
         public IActionResult CrearPresupuesto()
@@ -60,6 +62,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
+
         [AccessLevelAuthorize("Administrador")]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -68,7 +71,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("El modelo de presupuesto no es válido.");
-                model.ClientesDisponibles = _clienteRepository.ListarClientes() ?? new List<Clientes>(); // 🔹 Asegura que no sea null
+                model.ClientesDisponibles = _clienteRepository.ListarClientes() ?? new List<Clientes>();
                 return View(model);
             }
 
@@ -89,10 +92,11 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al crear presupuesto.");
-                model.ClientesDisponibles = _clienteRepository.ListarClientes() ?? new List<Clientes>(); // 🔹 Evita el null en caso de error
+                model.ClientesDisponibles = _clienteRepository.ListarClientes() ?? new List<Clientes>();
                 return View(model);
             }
         }
+
         [AccessLevelAuthorize("Administrador", "Cliente")]
         [HttpGet]
         public IActionResult VerPresupuesto(int id)
@@ -114,6 +118,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
+
         [AccessLevelAuthorize("Administrador")]
         [HttpGet]
         public IActionResult AgregarProducto(int idPresupuesto)
@@ -133,7 +138,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                     ProductosDisponibles = _productoRepository.ListarProductos()
                 };
 
-                return View("AgregarProductoPresupuesto", viewModel); // Aseguramos que llama a la vista correcta
+                return View("AgregarProductoPresupuesto", viewModel);
             }
             catch (Exception ex)
             {
@@ -151,7 +156,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             {
                 _logger.LogWarning("El modelo de producto no es válido.");
                 model.ProductosDisponibles = _productoRepository.ListarProductos();
-                return View("AgregarProductoPresupuesto", model); // Aseguramos que llama a la vista correcta
+                return View("AgregarProductoPresupuesto", model);
             }
 
             try
@@ -174,6 +179,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 return View("Error");
             }
         }
+
         [AccessLevelAuthorize("Administrador")]
         [HttpGet]
         public IActionResult ModificarPresupuesto(int id)
@@ -189,7 +195,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
 
                 var viewModel = new PresupuestoViewModel
                 {
-                    IdPresupuesto = presupuesto.IdPresupuesto, // 🔹 Ahora el ViewModel tiene el ID del presupuesto
+                    IdPresupuesto = presupuesto.IdPresupuesto,
                     ClienteId = presupuesto.Cliente.ClienteId,
                     FechaCreacion = presupuesto.FechaCreacion,
                     ClientesDisponibles = _clienteRepository.ListarClientes(),
@@ -201,7 +207,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al cargar la vista de modificación.");
-                return StatusCode(500);
+                return View("Error");
             }
         }
 
@@ -218,7 +224,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
 
             try
             {
-                var presupuestoExistente = _presupuestoRepository.ObtenerPresupuesto(IdPresupuesto); // ✅ CORREGIDO: Se usa IdPresupuesto en vez de ClienteId
+                var presupuestoExistente = _presupuestoRepository.ObtenerPresupuesto(IdPresupuesto);
                 if (presupuestoExistente == null)
                 {
                     _logger.LogWarning($"Presupuesto con ID {IdPresupuesto} no encontrado.");
@@ -249,10 +255,9 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al modificar el presupuesto.");
-                return StatusCode(500);
+                return View("Error");
             }
         }
-
 
         [AccessLevelAuthorize("Administrador")]
         [HttpGet]

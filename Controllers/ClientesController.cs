@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using repositoriosTP6;
 using tl2_tp6_2024_ElZorroAs.Models;
 using System;
-using System.Collections.Generic;
 
 namespace tl2_tp6_2024_ElZorroAs.Controllers
 {
@@ -32,7 +31,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al listar clientes.");
-                return View("Error");
+                return View("Error"); // Retorna una vista de error
             }
         }
 
@@ -69,7 +68,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al crear cliente.");
-                return View("Error");
+                return View("Error"); // Retorna una vista de error
             }
         }
 
@@ -82,14 +81,14 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
                 if (cliente == null)
                 {
                     _logger.LogWarning("Cliente con ID {ClienteId} no encontrado.", id);
-                    return NotFound();
+                    return NotFound(); // Retorna un 404 si no se encuentra el cliente
                 }
                 return View(cliente);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener el cliente con ID {ClienteId} para modificación.", id);
-                return View("Error");
+                return View("Error"); // Retorna una vista de error
             }
         }
 
@@ -100,13 +99,13 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             if (!ModelState.IsValid)
             {
                 _logger.LogWarning("El modelo de cliente no es válido.");
-                return View();
+                return View(); // Regresa a la vista con el estado actual
             }
 
             if (string.IsNullOrEmpty(nombre) || string.IsNullOrEmpty(email))
             {
                 ModelState.AddModelError("", "El nombre y el email son obligatorios.");
-                return View();
+                return View(); // Retorna la vista con el error
             }
 
             var clienteActualizar = new Clientes(idCliente, nombre, email, telefono);
@@ -120,9 +119,10 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al modificar el cliente con ID {ClienteId}.", idCliente);
-                return View("Error");
+                return View("Error"); // Retorna una vista de error
             }
         }
+
         [HttpPost]
         public IActionResult EliminarCliente(int id)
         {
@@ -135,7 +135,7 @@ namespace tl2_tp6_2024_ElZorroAs.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al eliminar el cliente con ID {ClienteId}.", id);
-                return View("Error");
+                return View("Error"); // Retorna una vista de error
             }
         }
     }
